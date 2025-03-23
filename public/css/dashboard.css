@@ -1,0 +1,39 @@
+/* /public/css/dashboard.css */
+body.background {
+    background-color: #1a1a1a;
+    color: #fff;
+}
+
+.sidebar {
+    background-color: #222;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.card.bg-dark {
+    background-color: #333 !important;
+    border: 1px solid #555;
+    border-radius: 10px;
+}
+
+.card-title {
+    font-family: 'Press Start 2P', cursive;
+    color: #ddd;
+}
+
+.card-text {
+    color: #aaa;
+}
+
+.badge-success {
+    background-color: #28a745;
+}
+
+.badge-warning {
+    background-color: #ffc107;
+    color: #333;
+}
+
+canvas {
+    max-height: 150px;
+}
