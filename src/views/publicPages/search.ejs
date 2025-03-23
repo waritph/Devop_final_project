@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Search Results - Game Shop</title>
+    <%- include('../partials/header.ejs') %>
+    <link rel="stylesheet" href="/public/css/search.css" /> <!-- 外部 CSS 文件 -->
+</head>
+
+<body class="background d-flex flex-column min-vh-100">
+    <%- include('../components/navbar.ejs') %>
+    <%- include('../components/alertBlock.ejs') %>
+
+    <div class="container-lg container-fluid mt-5 px-5">
+        <h1 class="mb-3">Search Results for "<%= searchQuery %>"</h1>
+
+        <!-- Search Form -->
+        <div class="input-group mb-4">
+            <form class="form-inline my-2 my-lg-0 w-100" method="get" action="/search" aria-label="Game Search Form">
+                <input class="form-control form-control-sm mr-sm-2 w-75" type="search" 
+                    placeholder="Search by game title" aria-label="Search games" name="title" value="<%= searchQuery %>">
+                <input type="hidden" name="page" value="1" />
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            </form>
+        </div>
+
+        <% if (user != null) { %>
+            <%- include('../components/cartModal.ejs') %>
+        <% } %>
+
+        <!-- Search Results -->
+        <div class="container-fluid mb-3">
+            <% if (data.items.length === 0) { %>
+                <div class="container-fluid text-center">
+                    <img src="/public/404.png" width="300" height="300" class="img-fluid img-responsive" alt="No games found" />
+                    <h3 class="p-3"><b>Oops!</b> No games found for "<%= searchQuery %>". Try a different search!</h3>
+                </div>
+            <% } else { %>
+                <div class="container-fluid row">
+                    <% data.items.forEach((item) => { %>
+                        <div class="col-12 col-md-6 my-3">
+                            <div class="row p-2 game-card border rounded">
+                                <div class="col-md-3 mt-1">
+                                    <img class="img-fluid img-responsive rounded game-image" src="<%= item.image_path %>" alt="<%= item.title %>">
+                                </div>
+                                <div class="col-md-6 mt-1">
+                                    <h5><%= item.title %></h5>
+                                    <h6 class="font-weight-light">Genre: <%= item.genre %></h6>
+                                    <p class="text-justify text-truncate para mb-0"><%= item.description %></p>
+                                </div>
+                                <div class="align-items-center align-content-center col-md-3 mt-1">
+                                    <div class="d-flex flex-row align-items-center">
+                                        <h4 class="mr-1"><%= item.price %> THB</h4>
+                                    </div>
+                                    <div class="d-flex flex-column mt-4">
+                                        <button class="btn btn-primary btn-sm" type="button" data-toggle="modal"
+                                            data-target="#gameModal<%= item.id %>">Details</button>
+                                        <button class="btn btn-outline-primary btn-sm mt-2" type="button"
+                                            onclick="handleToCart('<%= item.id %>')">Add to Cart</button>
+
+                                        <!-- Game Details Modal -->
+                                        <div class="modal fade" id="gameModal<%= item.id %>" tabindex="-1" role="dialog"
+                                            aria-labelledby="gameModalLabel<%= item.id %>" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h3 class="modal-title" id="gameModalLabel<%= item.id %>"><%= item.title %></h3>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">×</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="container-fluid text-center">
+                                                            <img class="img-fluid" width="300" height="300" src="<%= item.image_path %>" alt="<%= item.title %>">
+                                                        </div>
+                                                        <h4 class="mt-1">Description</h4>
+                                                        <h6 class="font-weight-light">Genre: <%= item.genre %></h6>
+                                                        <p><%= item.description %></p>
+                                                        <hr />
+                                                        <div class="row">
+                                                            <div class="align-items-center col-12 col-md-6">
+                                                                <h6 class="d-block">Quantity:</h6>
+                                                                <button class="btn btn-link px-2" onclick="decreaseQty('<%= item.id %>')">-</button>
+                                                                <input id="qty-<%= item.id %>" min="1" name="quantity" value="1" type="number"
+                                                                    class="qty-input" data-price="<%= item.price %>"
+                                                                    onchange="updateTotal('<%= item.id %>')" />
+                                                                <button class="btn btn-link px-2" onclick="increaseQty('<%= item.id %>')">+</button>
+                                                            </div>
+                                                            <div class="col-12 col-md-6 align-items-left">
+                                                                <p>Price: <span><%= item.price %></span> THB</p>
+                                                                <p>Total Price: <span id="total-<%= item.id %>"><%= item.price %></span> THB</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                        <button type="button" class="btn btn-success" onclick="handleToCart('<%= item.id %>')">Add to Cart</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+
+                <!-- Pagination -->
+                <div class="float-left">
+                    <nav aria-label="Search Results Pagination">
+                        <ul class="pagination">
+                            <% if (data.previousPage == null) { %>
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#" aria-disabled="true">Previous</a>
+                                </li>
+                            <% } else { %>
+                                <li class="page-item">
+                                    <a class="page-link" href="?title=<%= encodeURIComponent(searchQuery) %>&page=<%= data.previousPage %>">Previous</a>
+                                </li>
+                            <% } %>
+                            <% if (data.previousPage != null) { %>
+                                <li class="page-item">
+                                    <a class="page-link" href="?title=<%= encodeURIComponent(searchQuery) %>&page=<%= data.previousPage %>"><%= data.previousPage %></a>
+                                </li>
+                            <% } %>
+                            <li class="page-item active" aria-current="page">
+                                <a class="page-link" href="#"><%= page %><span class="sr-only">(current)</span></a>
+                            </li>
+                            <% if (data.nextPage != null) { %>
+                                <li class="page-item">
+                                    <a class="page-link" href="?title=<%= encodeURIComponent(searchQuery) %>&page=<%= data.nextPage %>"><%= data.nextPage %></a>
+                                </li>
+                            <% } %>
+                            <% if (data.nextPage == null) { %>
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#" aria-disabled="true">Next</a>
+                                </li>
+                            <% } else { %>
+                                <li class="page-item">
+                                    <a class="page-link" href="?title=<%= encodeURIComponent(searchQuery) %>&page=<%= data.nextPage %>">Next</a>
+                                </li>
+                            <% } %>
+                        </ul>
+                    </nav>
+                </div>
+            <% } %>
+        </div>
+    </div>
+
+    <%- include('../partials/footer.ejs') %>
+
+    <script>
+        const user_id = '<%= user && user.id ? user.id : "" %>';
+
+        function decreaseQty(id) {
+            const count = document.querySelector(`#qty-${id}`);
+            count.stepDown();
+            updateTotal(id);
+        }
+
+        function increaseQty(id) {
+            const count = document.querySelector(`#qty-${id}`);
+            count.stepUp();
+            updateTotal(id);
+        }
+
+        function updateTotal(id) {
+            const qtyInput = document.querySelector(`#qty-${id}`);
+            const price = parseFloat(qtyInput.getAttribute('data-price')) || 0;
+            const count = qtyInput.value;
+            document.querySelector(`#total-${id}`).innerHTML = (count * price).toFixed(2);
+        }
+
+        function handleToCart(id) {
+            if (!user_id) {
+                callAlert("warning", "Please log in to add games to your cart!");
+                return;
+            }
+
+            const qtyInput = document.querySelector(`#qty-${id}`);
+            const qty = qtyInput ? qtyInput.value : 1;
+
+            const payload = { id, qty };
+            fetch('/user/cart/', {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            })
+            .then(response => response.json())
+            .then(res => {
+                if (res.status === "success") {
+                    callAlert("success", "Game added to cart!");
+                } else {
+                    callAlert("danger", res.message);
+                }
+                setTimeout(() => { location.reload(); }, 1000);
+            })
+            .catch(error => {
+                callAlert("danger", "An error occurred while adding to cart.");
+            });
+        }
+    </script>
+</body>
+
+</html>
