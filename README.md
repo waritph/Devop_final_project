@@ -70,3 +70,8 @@ Or use nodemon for development:
 npm run dev
 ```
 
+// member of 953234-Basic Development and Operations 
+// 662115044 Warit Phanta
+// 622115040 Suchanun Sirijanya
+// 652115516 WENTAO DAI
+
