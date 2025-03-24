@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Checkout - Game Shop</title>
+    <%- include('../partials/header.ejs') %>
+    <style>
+        body { background-color: #1a1a1a; color: #fff; min-height: 100vh; display: flex; flex-direction: column; }
+        .checkout-container { background-color: #333; border: 1px solid #555; border-radius: 5px; }
+        .game-list { max-height: 750px; overflow-y: auto; }
+        .game-item { background-color: #444; border: 1px solid #666; border-radius: 5px; }
+        .empty-cart { padding: 20px; }
+        .text-muted { color: #aaa; }
+        .form-control { background-color: #444; color: #fff; border: 1px solid #666; }
+        .btn-primary { background-color: #007bff; border-color: #007bff; }
+        .btn-success { background-color: #28a745; border-color: #28a745; }
+    </style>
+</head>
+
+<body>
+    <%- include('../components/navbar.ejs') %>
+    <%- include('../components/alertBlock.ejs') %>
+
+    <div class="container-fluid my-4">
+        <h1>Checkout</h1>
+
+        <div class="row border shadow-lg rounded checkout-container">
+            <!-- Game List -->
+            <div class="col-12 col-lg-6 p-2 game-list">
+                <div class="text-center h4">Order Summary</div>
+                <% if (cart.totalQty == 0) { %>
+                    <div class="text-center empty-cart">
+                        <img src="/public/empty.png" width="300" height="300" class="img-fluid img-responsive" alt="Empty Cart" />
+                        <h4 class="p-3"><b>Oops!</b> No items in your cart.</h4>
+                        <p><a href="/games">Back to shopping</a></p>
+                    </div>
+                <% } else { %>
+                    <% cart.toArray().forEach(record => { %>
+                        <div class="row my-2 py-1 mx-2 border game-item">
+                            <div class="col-md-4 mt-1">
+                                <img src="<%= record.item.image_path %>" class="img-responsive img-fluid" alt="<%= record.item.title %>">
+                            </div>
+                            <div class="col-md-8 mt-1 my-2 border border-secondary py-3">
+                                <span class="h5"><%= record.item.title %></span>
+                                <p>Genre: <span class="text-capitalize"><%= record.item.genre %></span></p>
+                                <p class="text-justify text-truncate para mb-5"><%= record.item.description %></p>
+                                <div class="position-absolute w-75" style="bottom: 0;">
+                                    <p class="float-left"><%= record.item.price %> THB</p>
+                                    <p class="float-right">x <%= record.qty %></p>
+                                </div>
+                            </div>
+                        </div>
+                    <% }) %>
+                <% } %>
+            </div>
+
+            <!-- Summary and Address Tabs -->
+            <div class="col-12 col-lg-6 p-2">
+                <nav>
+                    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                        <a class="nav-item nav-link active" id="nav-summary-tab" data-toggle="tab" href="#nav-summary" role="tab" aria-controls="nav-summary" aria-selected="true">Summary</a>
+                        <a class="nav-item nav-link" id="nav-address-tab" data-toggle="tab" href="#nav-address" role="tab" aria-controls="nav-address" aria-selected="false">Place Order</a>
+                    </div>
+                </nav>
+                <div class="tab-content" id="nav-tabContent">
+                    <!-- Summary Tab -->
+                    <div class="tab-pane fade show active" id="nav-summary" role="tabpanel" aria-labelledby="nav-summary-tab">
+                        <div class="p-3">
+                            <h3>Summary</h3>
+                            <div class="row my-3">
+                                <div class="col-5 text-left">
+                                    <span class="h5 d-block text-muted">Subtotal:</span>
+                                    <span class="h5 d-block text-muted">Shipping:</span>
+                                    <span class="h5 d-block">Total:</span>
+                                </div>
+                                <div class="col-7 text-right">
+                                    <span class="h5 d-block text-muted"><%= cart.totalPrice %> THB</span>
+                                    <span class="h5 d-block text-muted"><span id="shippingPrice">15</span> THB</span>
+                                    <span class="h5 d-block"><span id="finalPrice">0</span> THB</span>
+                                </div>
+                                <div class="col-12 mt-2 text-right">
+                                    <button id="nextBtn" class="btn btn-primary">Next</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Address Tab -->
+                    <div class="tab-pane fade" id="nav-address" role="tabpanel" aria-labelledby="nav-address-tab">
+                        <div class="p-3">
+                            <h4>Delivery Address</h4>
+                            <div class="my-3 px-2">
+                                <% if (cart.totalQty == 0) { %><fieldset disabled><% } %>
+                                    <form class="form-row form-control shadow-lg" action="/user/checkout" method="post" enctype="application/json; charset=utf-8">
+                                        <div class="form-group col-md-6">
+                                            <label for="firstname">First Name</label>
+                                            <input type="text" class="form-control" id="firstname" name="firstname" placeholder="John" required>
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label for="lastname">Last Name</label>
+                                            <input type="text" class="form-control" id="lastname" name="lastname" placeholder="Smith" required>
+                                        </div>
+                                        <div class="form-group col-md-12">
+                                            <label for="telephone">Telephone</label>
+                                            <input type="text" class="form-control" id="telephone" name="telephone" placeholder="Telephone" required>
+                                        </div>
+                                        <div class="form-group col-md-12">
+                                            <label for="houseNumber">House No.</label>
+                                            <input type="text" class="form-control" id="houseNumber" name="houseNumber" placeholder="House No." required>
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label for="amphoe">Amphoe</label>
+                                            <input type="text" class="form-control" id="amphoe" name="amphoe" placeholder="Amphoe" required>
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label for="district">District</label>
+                                            <input type="text" class="form-control" id="district" name="district" placeholder="District" required>
+                                        </div>
+                                        <div class="form-group col-md-4">
+                                            <label for="province">Province</label>
+                                            <input type="text" class="form-control" id="province" name="province" placeholder="Province" required>
+                                        </div>
+                                        <div class="form-group col-md-4">
+                                            <label for="zipcode">ZIP Code</label>
+                                            <input type="text" class="form-control" id="zipcode" name="zipcode" placeholder="ZIP Code" required>
+                                        </div>
+                                        <div class="form-group col-md-4">
+                                            <label for="country">Country</label>
+                                            <input type="text" class="form-control" id="country" name="country" value="Thailand" readonly>
+                                        </div>
+                                        <div class="form-group col-md-12">
+                                            <label for="note">Note</label>
+                                            <textarea class="form-control" id="note" name="note" placeholder="Optional delivery instructions"></textarea>
+                                        </div>
+                                        <button type="submit" class="btn my-2 btn-success">Place Order</button>
+                                    </form>
+                                <% if (cart.totalQty == 0) { %></fieldset><% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../partials/footer.ejs') %>
+    <link rel="stylesheet" href="https://earthchie.github.io/jquery.Thailand.js/jquery.Thailand.js/dist/jquery.Thailand.min.css">
+    <script src="https://earthchie.github.io/jquery.Thailand.js/jquery.Thailand.js/dist/jquery.Thailand.min.js"></script>
+    <script src="/public/jquery.Thailand.js/dependencies/JQL.min.js"></script>
+    <script src="/public/jquery.Thailand.js/dependencies/typeahead.bundle.js"></script>
+
+    <script>
+        // 将 EJS 值赋值给变量，避免直接嵌入复杂表达式
+        const cartTotalPrice = Number('<%= cart.totalPrice || 0 %>');
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const shippingPriceElement = document.querySelector('#shippingPrice');
+            const finalPriceElement = document.querySelector('#finalPrice');
+            if (shippingPriceElement && finalPriceElement) {
+                const shippingPrice = Number(shippingPriceElement.innerHTML || 0);
+                finalPriceElement.innerHTML = (cartTotalPrice + shippingPrice).toFixed(2);
+            }
+
+            const nextBtn = document.querySelector('#nextBtn');
+            if (nextBtn) {
+                nextBtn.addEventListener('click', function() {
+                    const addressTab = document.querySelector('#nav-address-tab');
+                    if (addressTab) addressTab.click();
+                });
+            }
+        });
+
+        $(document).ready(function() {
+            $.Thailand({
+                database: '/public/jquery.Thailand.js/database/db.json',
+                $district: $('#district'),
+                $amphoe: $('#amphoe'),
+                $province: $('#province'),
+                $zipcode: $('#zipcode')
+            });
+        });
+    </script>
+</body>
+</html>

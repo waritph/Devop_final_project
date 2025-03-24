@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Order Detail - Game Shop</title>
+    <%- include('../partials/header.ejs') %>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #1a1a1a; color: #fff; min-height: 100vh; display: flex; flex-direction: column; }
+        .order-status.pending { color: #dc3545; }
+        .order-status.processing { color: #ffc107; }
+        .order-status.delivering { color: #6f42c1; }
+        .order-status.delivered { color: #28a745; }
+        .bg-danger { background-color: #dc3545 !important; }
+        .textBox { color: #fff; margin: 0.5rem; }
+        .game-item { background-color: #444; border: 1px solid #666; border-radius: 5px; }
+        .summary-list { max-height: 500px; overflow-y: auto; }
+        .card { background-color: #444; border: 1px solid #666; }
+        .text-muted { color: #aaa; }
+        .btn-primary { background-color: #007bff; border-color: #007bff; }
+    </style>
+</head>
+<body>
+    <%- include('../components/navbar.ejs') %>
+    <%- include('../components/alertBlock.ejs') %>
+
+    <div class="container my-3 mx-auto">
+        <h1>Order #<%= order.id %></h1>
+        <% if (order.status === 'pending') { %>
+            <div class="progress"><div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div></div>
+        <% } else if (order.status === 'processing') { %>
+            <div class="progress"><div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div></div>
+        <% } else if (order.status === 'shipped') { %>
+            <div class="progress"><div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div></div>
+        <% } else if (order.status === 'delivered') { %>
+            <div class="progress"><div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div></div>
+        <% } %>
+    </div>
+
+    <div class="container-fluid row mt-4 mx-auto">
+        <!-- Left Section -->
+        <div class="col-12 col-lg-8 h-100">
+            <div class="border bg-danger p-2">
+                <p class="textBox"><b>Order Status:</b> <span class="text-capitalize order-status <%= order.status %>"><%= order.status %></span></p>
+            </div>
+            <% if (order.status !== 'pending') { %>
+                <%- include('../components/map.ejs') %>
+            <% } else { %>
+                <div class="row mt-2 p-2">
+                    <div class="col-12 col-lg-6 d-block">
+                        <h3>PromptPay QR Code</h3>
+                        <%- include('../components/qrCode.ejs') %>
+                    </div>
+                    <div class="col-12 col-lg-6 d-block">
+                        <h3>Proof of Payment</h3>
+                        <form class="form form-control p-2" action="/user/order/<%= order.id %>/upload-proof" method="post" enctype="multipart/form-data">
+                            <input type="file" class="form-control my-2" name="paymentProof" accept="image/*" required />
+                            <input type="submit" class="btn btn-primary my-2" value="Upload" />
+                        </form>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+
+        <!-- Right Section -->
+        <div class="col-12 col-lg-4 p-2 summary-list">
+            <nav>
+                <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                    <a class="nav-item nav-link active" id="nav-summary-tab" data-bs-toggle="tab" href="#nav-summary" role="tab" aria-controls="nav-summary" aria-selected="true">Summary</a>
+                    <a class="nav-item nav-link" id="nav-list-tab" data-bs-toggle="tab" href="#nav-list" role="tab" aria-controls="nav-list" aria-selected="false">Game List</a>
+                </div>
+            </nav>
+            <div class="tab-content" id="nav-tabContent">
+                <!-- Game List Tab -->
+                <div class="tab-pane fade" id="nav-list" role="tabpanel" aria-labelledby="nav-list-tab">
+                    <% order.records.forEach(record => { %>
+                        <div class="row my-2 py-1 mx-2 border game-item">
+                            <div class="col-md-4 mt-1">
+                                <img src="<%= record.item.image_path %>" class="img-responsive img-fluid" alt="<%= record.item.title %>">
+                            </div>
+                            <div class="col-md-8 mt-1 my-2 py-3">
+                                <span class="h5"><%= record.item.title %></span>
+                                <p>Genre: <span class="text-capitalize"><%= record.item.genre %></span></p>
+                                <p class="text-justify text-truncate para mb-5"><%= record.item.description %></p>
+                                <div class="position-absolute w-75" style="bottom: 0;">
+                                    <p class="float-left"><%= record.item.price %> THB</p>
+                                    <p class="float-right">x <%= record.qty %></p>
+                                </div>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+
+                <!-- Summary Tab -->
+                <div class="tab-pane fade show active" id="nav-summary" role="tabpanel" aria-labelledby="nav-summary-tab">
+                    <div class="p-3">
+                        <h3>Order Details</h3>
+                        <div class="row my-3 p-2">
+                            <div class="col-6">Receiver</div>
+                            <div class="col-6">Tel.</div>
+                            <div class="col-6"><b><%= order.firstname %> <%= order.lastname %></b></div>
+                            <div class="col-6"><b><%= order.telephone %></b></div>
+                            <div class="card col-12">
+                                <div class="card-body">
+                                    <div class="card-title">Destination</div>
+                                    <p class="card-text"><%= order.destination %></p>
+                                </div>
+                            </div>
+                        </div>
+                        <hr />
+
+                        <h3>Summary</h3>
+                        <div class="row my-3">
+                            <div class="col-5 text-left">
+                                <span class="h5 d-block text-muted">Subtotal:</span>
+                                <span class="h5 d-block text-muted">Shipping:</span>
+                                <span class="h5 d-block">Total:</span>
+                            </div>
+                            <div class="col-7 text-right">
+                                <span class="h5 d-block text-muted"><%= order.product_price %> THB</span>
+                                <span class="h5 d-block text-muted"><span id="shippingPrice"><%= order.shipping_price %></span> THB</span>
+                                <span class="h5 d-block"><span id="finalPrice"><%= order.total_price %></span> THB</span>
+                            </div>
+                        </div>
+                        <hr />
+
+                        <h4>Note</h4>
+                        <div class="row my-3">
+                            <div class="col-10 p-2 border mx-auto">
+                                <p><%= order.note || 'No notes provided.' %></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../partials/footer.ejs') %>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const shippingPriceElement = document.querySelector('#shippingPrice');
+            const finalPriceElement = document.querySelector('#finalPrice');
+            if (shippingPriceElement && finalPriceElement) {
+                const shippingPrice = Number(shippingPriceElement.innerHTML || 0);
+                const productPrice = Number('<%= order.product_price || 0 %>');
+                finalPriceElement.innerHTML = (productPrice + shippingPrice).toFixed(2);
+            }
+        });
+    </script>
+</body>
+</html>
