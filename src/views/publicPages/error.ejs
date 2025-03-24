@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/header.ejs') %>
+    <title>Error</title>
+</head>
+<body>
+    <div class="text-center mt-3">   
+        <img class="img-fluid" width="300" height="300" src="/public/error.png" />
+        <% if(error) {%>
+            <div class="container">
+                <strong style="color: red;">Error</strong>
+                <p>
+                    <%= error.message %>
+                </p>
+            </div>    
+        <% } %>
+        <h3>Sorry, we had some technical problems during your last operation.</h3>
+        <p>Please try again later.</p>
+        <p><a href="/">back to home</a></p>
+
+        
+    </div>
+</body>
+</html>
