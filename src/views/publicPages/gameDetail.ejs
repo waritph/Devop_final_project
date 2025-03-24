@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title><%= game.title %> - Game Shop</title>
+    <%- include('../partials/header.ejs') %>
+    <link rel="stylesheet" href="/public/css/detail.css" />
+</head>
+
+<body class="background d-flex flex-column min-vh-100">
+    <%- include('../components/navbar.ejs') %>
+    <%- include('../components/alertBlock.ejs') %>
+
+    <div class="container mt-5">
+        <h1><%= game.title %></h1>
+        <div class="row">
+            <div class="col-md-6 text-center">
+                <img class="img-fluid rounded" src="<%= game.image_path %>" alt="<%= game.title %>" style="max-width: 400px; max-height: 400px;">
+            </div>
+            <div class="col-md-6">
+                <h4>Description</h4>
+                <p><%= game.description %></p>
+                <h6 class="font-weight-light">Genre: <%= game.genre %></h6>
+                <hr />
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <h6>Quantity:</h6>
+                        <div class="input-group w-75">
+                            <button class="btn btn-outline-secondary" onclick="decreaseQty()">-</button>
+                            <input id="quantity" min="1" name="quantity" value="1" type="number" class="form-control text-center" 
+                                data-price="<%= game.price_promotion || game.price %>" onchange="updateTotal()" />
+                            <button class="btn btn-outline-secondary" onclick="increaseQty()">+</button>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <h6>Platform:</h6>
+                        <select id="platform" class="form-control w-75">
+                            <option value="PC">PC</option>
+                            <option value="PS5">PS5</option>
+                            <option value="Xbox">Xbox</option>
+                        </select>
+                    </div>
+                    <div class="col-12 mt-3">
+                        <% if (game.price_promotion) { %>
+                            <p>Price: <span class="text-danger"><%= game.price_promotion %> THB</span>
+                                <span class="text-muted text-decoration-line-through"><%= game.price %> THB</span></p>
+                        <% } else { %>
+                            <p>Price: <span><%= game.price %> THB</span></p>
+                        <% } %>
+                        <p>Total Price: <span id="totalPrice"><%= game.price_promotion || game.price %></span> THB</p>
+                    </div>
+                </div>
+                <button class="btn btn-success mt-3" onclick="handleToCart('<%= game.id %>')">Add to Cart</button>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../partials/footer.ejs') %>
+
+    <script>
+        const user_id = '<%= user && user.id ? user.id : "" %>';
+
+        function decreaseQty() {
+            const qtyInput = document.getElementById('quantity');
+            qtyInput.stepDown();
+            updateTotal();
+        }
+
+        function increaseQty() {
+            const qtyInput = document.getElementById('quantity');
+            qtyInput.stepUp();
+            updateTotal();
+        }
+
+        function updateTotal() {
+            const qtyInput = document.getElementById('quantity');
+            const price = parseFloat(qtyInput.getAttribute('data-price')) || 0;
+            const qty = qtyInput.value;
+            document.getElementById('totalPrice').innerHTML = (qty * price).toFixed(2);
+        }
+
+        function handleToCart(id) {
+            if (!user_id) {
+                callAlert("warning", "Please log in to add games to your cart!");
+                return;
+            }
+
+            const qty = document.getElementById('quantity').value;
+            const platform = document.getElementById('platform').value;
+
+            const payload = { id, qty, platform };
+            fetch('/user/cart/', {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            })
+            .then(response => response.json())
+            .then(res => {
+                if (res.status === "success") {
+                    callAlert("success", "Game added to cart!");
+                    setTimeout(() => { window.location.href = '/games'; }, 1000);
+                } else {
+                    callAlert("danger", res.message);
+                }
+            })
+            .catch(error => {
+                callAlert("danger", "An error occurred while adding to cart.");
+            });
+        }
+    </script>
+</body>
+</html>
