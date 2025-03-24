@@ -16,11 +16,11 @@ const Game = sequelize.define('Game', {
         allowNull: false
     },
     price: {
-        type: DataTypes.DECIMAL(10, 2),
+        type: DataTypes.FLOAT,
         allowNull: false
     },
     price_promotion: {
-        type: DataTypes.DECIMAL(10, 2),
+        type: DataTypes.FLOAT,
         defaultValue: null
     },
     image_path: {
