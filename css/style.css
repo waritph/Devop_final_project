@@ -1,0 +1,32 @@
+/* /public/css/style.css */
+body.background {
+    background-color: #1a1a1a;
+    color: #fff;
+    font-family: 'Poppins', sans-serif;
+}
+
+.footer {
+    background-color: #222;
+    border-top: 1px solid #555;
+}
+
+.text-muted {
+    color: #aaa !important;
+}
+
+.social-links a {
+    color: #fff;
+    font-size: 1.5rem;
+    margin: 0 10px;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.social-links a:hover {
+    color: #28a745; /* Green accent for hover */
+}
+
+/* Pixel font for headings, if desired */
+h1, h4 {
+    font-family: 'Press Start 2P', cursive;
+}

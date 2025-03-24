@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Welcome - Game Shop</title>
+    <%- include('./partials/header.ejs') %>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-family: 'Arial', sans-serif;
+        }
+        .container { margin-top: 2rem; margin-bottom: 4rem; }
+        .hero-section {
+            background: url('/public/assets/hero-bg.jpg') no-repeat center/cover;
+            padding: 4rem 2rem;
+            border-radius: 10px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1;
+        }
+        .hero-section * { position: relative; z-index: 2; }
+        .carousel-item img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        .carousel-caption {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 1rem;
+            border-radius: 5px;
+        }
+        .card {
+            background: #2e2e2e;
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 123, 255, 0.3);
+        }
+        .card-img-top {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .card-body {
+            padding: 1.5rem;
+            text-align: center;
+        }
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #00c4ff;
+        }
+        .card-text { color: #bbb; }
+        .btn-primary {
+            background: linear-gradient(45deg, #007bff, #00c4ff);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: background 0.3s ease;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #0056b3, #0096cc);
+        }
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #fff;
+            text-align: center;
+            margin-bottom: 2rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        footer {
+            margin-top: auto;
+            background: #222;
+            padding: 1rem;
+            text-align: center;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <%- include('components/navbar') %>
+
+    <div class="container">
+        <div class="hero-section mb-5">
+            <h1 class="display-4">Welcome to Game Shop</h1>
+            <p class="lead">Your ultimate destination for epic gaming adventures!</p>
+            <a href="/games" class="btn btn-primary mt-3">Explore Now <i class="fas fa-arrow-right ms-2"></i></a>
+        </div>
+
+        <!-- 高亮产品轮播 -->
+        <div id="highlightCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <img src="/public/assets/game1.jpg" class="d-block" alt="Featured Game 1">
+                    <div class="carousel-caption">
+                        <h5>Epic Quest: Legends</h5>
+                        <p>Only 599 THB - Pre-order Now!</p>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="/public/assets/game2.jpg" class="d-block" alt="Featured Game 2">
+                    <div class="carousel-caption">
+                        <h5>Battlefront: Galaxy</h5>
+                        <p>Special Offer: 499 THB</p>
+                    </div>
+            
+                </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#highlightCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#highlightCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+
+        <!-- 功能卡片区域 -->
+        <h2 class="section-title">Dive into the Action</h2>
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="card">
+                    <img class="card-img-top" src="/public/assets/Thumbnail2.jpg" alt="Explore Games">
+                    <div class="card-body">
+                        <h5 class="card-title">Discover New Games</h5>
+                        <p class="card-text">Browse our vast collection of the latest and greatest titles.</p>
+                        <a href="/games" class="btn btn-primary">Shop Now</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="card">
+                    <img class="card-img-top" src="/public/assets/Thumbnail1.jpg" alt="Order Status">
+                    <div class="card-body">
+                        <h5 class="card-title">Track Your Orders</h5>
+                        <p class="card-text">Stay updated on your game deliveries and play sooner.</p>
+                        <a href="/user/orders" class="btn btn-primary">My Orders</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="card">
+                    <img class="card-img-top" src="/public/assets/Thumbnail3.jpg" alt="About Us">
+                    <div class="card-body">
+                        <h5 class="card-title">Who We Are</h5>
+                        <p class="card-text">Learn about our mission to bring gaming to everyone.</p>
+                        <a href="/about" class="btn btn-primary">About Us</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('./partials/footer.ejs') %>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

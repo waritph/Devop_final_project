@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Contact</title>
+    <%- include('../partials/header.ejs') %>
+        <style>
+            .wrapper {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+
+            }
+
+            .profile {
+                top: -10%;
+                position: relative;
+                width: 600px;
+                height: 450px;
+                background: url("/public/assets/Thumbnail1.jpg");
+                background-size: cover;
+                cursor: pointer;
+                border: 12px;
+                border-top-right-radius: 35px !important;
+                border-radius: 6px
+            }
+
+            .overlay {
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.8);
+                border-radius: 12px;
+                cursor: pointer;
+                opacity: 0;
+                transition: all 1s;
+                border-top-right-radius: 35px !important;
+                border-radius: 6px;
+            }
+
+            .profile:hover .overlay {
+                opacity: 1
+            }
+
+            .social-icons {
+                display: flex;
+                list-style: none;
+                bottom: 10px;
+                position: absolute;
+                text-align: center;
+                justify-content: center;
+                left: 22px
+            }
+
+            .social-icons li {
+                width: 25px;
+                height: 25px;
+                border: 1px solid #eee;
+                padding: 20px;
+                margin-right: 10px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                color: #fff;
+                border-radius: 5px;
+                transition: all 1s
+            }
+
+            .social-icons li:hover {
+                background: #fff;
+                color: #000
+            }
+
+            .overlay .about {
+                position: relative;
+                justify-content: center;
+                align-items: center;
+                display: flex;
+                top: 40%;
+                color: #fff;
+                flex: column
+            }
+        </style>
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+    <%- include('../components/navbar.ejs') %>
+
+
+        <div class="container-fluid mt-4 mx-auto w-75">
+            <h1 class="display-4">Contact us</h1>
+            <div class="container-fluid row mx-auto">
+                <div class="container col-12 col-lg-6">
+                    <div class="w-100">
+                        <h3 class="d-block mx-auto">Our location</h3>
+                        <iframe title="Our location" class="embed-responsive embed-responsive-1by1"
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1206.9792209685988!2d98.95138512732592!3d18.798940898607633!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x30da3b0fea9c2f3f%3A0x3a5ae8b49f1692ab!2sSchool%20of%20Lifelong%20Education%2C%20Chiang%20Mai%20University!5e0!3m2!1sen!2sth!4v1679991341550!5m2!1sen!2sth"
+                            width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade">
+                        </iframe>
+                    </div>
+                </div>
+                <div class="container col-12 col-lg-6">
+                    <div class="w-100">
+                        <h3 class="d-block align-top">Follow us</h3>
+                        <div class="card">
+                            <div class="card-body">
+                                <img class="card-img-top" src="/public/assets/Thumbnail1.jpg" alt="Card image cap">
+                                <h2 class="card-title mt-2">YYds</h2>
+                                <a href="#" class="card-link"><i class="fa fa-facebook"  style="color: black;"></i></a>
+                                <a href="#" class="card-link"><i class="fa fa-instagram"  style="color: black;"></i></a>
+                                <a href="#" class="card-link"><i class="fa fa-twitter" style="color: black;"></i></a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+
+
+        <%- include('../partials/footer.ejs') %>
+</body>
+
+</html>

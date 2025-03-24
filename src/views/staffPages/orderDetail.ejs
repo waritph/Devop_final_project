@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Order Detail - Game Shop</title>
+    <%- include('../partials/header.ejs') %>
+    <link rel="stylesheet" href="/public/css/orderDetail.css" /> <!-- 外部 CSS -->
+</head>
+
+<body class="background d-flex flex-column min-vh-100">
+    <%- include('../components/navbar.ejs') %>
+    <%- include('../components/alertBlock.ejs') %>
+
+    <div class="container-fluid my-4">
+        <h1>Order #<%= order._id %></h1>
+        <div class="text-center h4">Status: <span class="text-capitalize order-status <%= order.status %>"><%= order.status %></span></div>
+
+        <div class="row border shadow-lg rounded order-container">
+            <!-- Product List -->
+            <div class="col-12 col-lg-6 p-2 product-list">
+                <div class="text-center h4">Game List</div>
+                <% order.records.forEach(record => { %>
+                    <div class="row my-2 py-1 mx-2 border game-item">
+                        <div class="col-md-4 mt-1">
+                            <img src="<%= record.item.image_path %>" class="img-responsive img-fluid" alt="<%= record.item.title %>">
+                        </div>
+                        <div class="col-md-8 mt-1 my-2 border border-secondary py-3">
+                            <span class="h5"><%= record.item.title %></span>
+                            <p>Genre: <span class="text-capitalize"><%= record.item.genre %></span></p>
+                            <p class="text-justify text-truncate para mb-5"><%= record.item.description %></p>
+                            <div class="position-absolute w-75 price-qty">
+                                <p class="float-left"><%= record.item.price %> THB</p>
+                                <p class="float-right">x <%= record.qty %></p>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+
+            <!-- Summary and Map Tabs -->
+            <div class="col-12 col-lg-6 p-2 summary-map">
+                <nav>
+                    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                        <a class="nav-item nav-link active" id="nav-summary-tab" data-toggle="tab" href="#nav-summary" role="tab" aria-controls="nav-summary" aria-selected="true">Summary</a>
+                        <a class="nav-item nav-link" id="nav-map-tab" data-toggle="tab" href="#nav-map" role="tab" aria-controls="nav-map" aria-selected="false">Map</a>
+                    </div>
+                </nav>
+                <div class="tab-content" id="nav-tabContent">
+                    <!-- Map Tab -->
+                    <div class="tab-pane fade" id="nav-map" role="tabpanel" aria-labelledby="nav-map-tab">
+                        <h3>Delivery Route</h3>
+                        <%- include('../components/map.ejs') %>
+                    </div>
+
+                    <!-- Summary Tab -->
+                    <div class="tab-pane fade show active" id="nav-summary" role="tabpanel" aria-labelledby="nav-summary-tab">
+                        <div class="p-3">
+                            <h3>Update Status</h3>
+                            <form class="my-3 p-2 form-row" method="post" action="/staff/order/update" enctype="application/json; charset=utf-8">
+                                <input type="hidden" name="order_id" value="<%= order._id %>"/>
+                                <select class="form-control col-5" id="updatedStatus" name="updatedStatus">
+                                    <option value="pending" <%= order.status === 'pending' ? 'selected' : '' %>>Pending</option>
+                                    <option value="processing" <%= order.status === 'processing' ? 'selected' : '' %>>Processing</option>
+                                    <option value="delivering" <%= order.status === 'delivering' ? 'selected' : '' %>>Delivering</option>
+                                    <option value="delivered" <%= order.status === 'delivered' ? 'selected' : '' %>>Delivered</option>
+                                </select>
+                                <input type="submit" value="Update" class="btn btn-primary col-4 mx-auto" />
+                            </form>
+                            <hr />
+
+                            <h3>Order Details</h3>
+                            <div class="row my-3 p-2">
+                                <div class="col-5">
+                                    <p>Ordered by: <span class="text-capitalize"><%= order.firstname %> <%= order.lastname %></span></p>
+                                </div>
+                                <div class="col-5">
+                                    <p>Tel: <span><%= order.telephone %></span></p>
+                                </div>
+                                <div class="card col-12">
+                                    <div class="card-body">
+                                        <div class="card-title">Destination</div>
+                                        <p class="card-text"><%= order.destination %></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr />
+
+                            <h3>Summary</h3>
+                            <div class="row my-3">
+                                <div class="col-5 text-left">
+                                    <span class="h5 d-block text-muted">Subtotal:</span>
+                                    <span class="h5 d-block text-muted">Shipping:</span>
+                                    <span class="h5 d-block">Total:</span>
+                                </div>
+                                <div class="col-7 text-right">
+                                    <span class="h5 d-block text-muted"><%= order.total_price %> THB</span>
+                                    <span class="h5 d-block text-muted"><span id="shippingPrice"><%= order.shipping_price %></span> THB</span>
+                                    <span class="h5 d-block"><span id="finalPrice">0</span> THB</span>
+                                </div>
+                            </div>
+                            <hr />
+
+                            <h4>Note</h4>
+                            <div class="row my-3">
+                                <div class="col-10 p-2 border mx-auto">
+                                    <p><%= order.note || 'No notes provided.' %></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../partials/footer.ejs') %>
+
+    <script>
+        const finalPrice = document.querySelector('#finalPrice');
+        const totalPrice = Number(document.querySelector('#totalPrice').innerHTML || 0);
+        const shippingPrice = Number(document.querySelector('#shippingPrice').innerHTML || 0);
+        finalPrice.innerHTML = (totalPrice + shippingPrice).toFixed(2);
+    </script>
+</body>
+
+</html>

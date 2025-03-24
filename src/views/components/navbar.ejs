@@ -1,0 +1,47 @@
+<nav class="navbar navbar-expand-xl navbar-dark bg-danger">
+    <a href="/" class="navbar-brand"><i class="fa fa-cube"></i>Game<b>Shop</b></a>
+    <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div id="navbarCollapse" class="collapse navbar-collapse">
+        <ul class="navbar-nav">
+            <li class="nav-item"><a href="/games" class="nav-link">Games</a></li>
+            <!-- 添加分类下拉菜单 -->
+            <li class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Categories</a>
+                <div class="dropdown-menu">
+                    <a href="/games?genre=action" class="dropdown-item">Action</a>
+                    <a href="/games?genre=adventure" class="dropdown-item">Adventure</a>
+                    <a href="/games?genre=rpg" class="dropdown-item">RPG</a>
+                    <a href="/games?genre=strategy" class="dropdown-item">Strategy</a>
+                    <a href="/games?genre=sports" class="dropdown-item">Sports</a>
+                </div>
+            </li>
+            <% if (user) { %>
+                <li class="nav-item"><a href="/user/orders" class="nav-link">Orders</a></li>
+            <% } %>
+            <li class="nav-item"><a href="/contact" class="nav-link">Contact</a></li>
+        </ul>
+        <!-- 添加搜索栏 -->
+        <form class="form-inline mx-3 my-2 my-lg-0" method="get" action="/games">
+            <input class="form-control form-control-sm mr-sm-2" type="search" placeholder="Search Games" aria-label="Search" name="title">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        </form>
+        <ul class="navbar-nav ml-auto">
+            <% if (user) { %>
+                <!-- 添加购物车链接 -->
+                <li class="nav-item"><a href="/user/cart" class="nav-link"><i class="fa fa-shopping-cart"></i> Cart</a></li>
+                <li class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><%= user.username || 'User' %></a>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <a href="/user" class="dropdown-item">Profile</a>
+                        <a href="/auth/signout" class="dropdown-item">Sign Out</a>
+                    </div>
+                </li>
+            <% } else { %>
+                <li class="nav-item"><a href="/auth/signin" class="nav-link">Sign In</a></li>
+                <li class="nav-item"><a href="/auth/signup" class="nav-link">Sign Up</a></li>
+            <% } %>
+        </ul>
+    </div>
+</nav>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Manage Games - Game Shop</title>
+    <%- include('../partials/header.ejs') %>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/public/css/manageGames.css" />
+</head>
+<body class="background d-flex flex-column min-vh-100">
+    <%- include('../components/navbar.ejs') %>
+    <%- include('../components/alertBlock.ejs') %>
+
+    <div class="container-lg container-fluid mt-5 px-5">
+        <a href="/staff/games/patch" class="float-end mt-3 rounded btn btn-success mr-lg-5 mr-2">Add Game</a>
+        <h1 class="mb-3">Manage Games</h1>
+
+        <div class="input-group mb-3">
+            <form class="d-flex my-2 my-lg-0" method="get" aria-label="Game Search Form">
+                <input class="form-control me-2 w-50 w-sm-100" type="search" placeholder="Search by game title" aria-label="Search games" name="title" value="<%= title || '' %>">
+                <input type="hidden" name="page" value="1" />
+                <input type="hidden" name="genre" value="<%= genre || 'any' %>" />
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            </form>
+        </div>
+
+        <nav class="d-none d-lg-block" aria-label="Game Genre Tabs">
+            <div class="nav nav-tabs nav-responsive-lg">
+                <a class="nav-item nav-link <%= genre === 'any' ? 'active' : '' %>" href="?genre=any">All Games</a>
+                <a class="nav-item nav-link <%= genre === 'action' ? 'active' : '' %>" href="?genre=action">Action</a>
+                <a class="nav-item nav-link <%= genre === 'adventure' ? 'active' : '' %>" href="?genre=adventure">Adventure</a>
+                <a class="nav-item nav-link <%= genre === 'rpg' ? 'active' : '' %>" href="?genre=rpg">RPG</a>
+                <a class="nav-item nav-link <%= genre === 'strategy' ? 'active' : '' %>" href="?genre=strategy">Strategy</a>
+                <a class="nav-item nav-link <%= genre === 'sports' ? 'active' : '' %>" href="?genre=sports">Sports</a>
+            </div>
+        </nav>
+
+        <div class="dropdown d-lg-none mb-5">
+            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownGenreButton" data-bs-toggle="dropdown">
+                Genre
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownGenreButton">
+                <a class="dropdown-item <%= genre === 'any' ? 'active' : '' %>" href="?genre=any">All Games</a>
+                <a class="dropdown-item <%= genre === 'action' ? 'active' : '' %>" href="?genre=action">Action</a>
+                <a class="dropdown-item <%= genre === 'adventure' ? 'active' : '' %>" href="?genre=adventure">Adventure</a>
+                <a class="dropdown-item <%= genre === 'rpg' ? 'active' : '' %>" href="?genre=rpg">RPG</a>
+                <a class="dropdown-item <%= genre === 'strategy' ? 'active' : '' %>" href="?genre=strategy">Strategy</a>
+                <a class="dropdown-item <%= genre === 'sports' ? 'active' : '' %>" href="?genre=sports">Sports</a>
+            </div>
+        </div>
+
+        <div class="table-responsive-lg">
+            <table class="table table-dark">
+                <caption>List of games (Total: <%= data.total != null ? data.total : 0 %>)</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Picture</th>
+                        <th scope="col">Title</th>
+                        <th scope="col">Genre</th>
+                        <th scope="col">Price (THB)</th>
+                        <th scope="col">Promo Price (THB)</th>
+                        <th scope="col">Created At</th>
+                        <th scope="col">Updated At</th>
+                        <th scope="col">Options</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% data.items.slice(0, 15).forEach((item, index) => { %>
+                        <tr>
+                            <th scope="row"><%= (page - 1) * 15 + index + 1 %></th>
+                            <td><img src="<%= item.image_path %>" class="rounded game-image" alt="<%= item.title %>"></td>
+                            <td>
+                                <% if (item.is_outofstock) { %>
+                                    <span class="text-danger"><%= item.title %></span>
+                                <% } else { %>
+                                    <%= item.title %>
+                                <% } %>
+                            </td>
+                            <td><%= item.genre %></td>
+                            <td><%= item.price %></td>
+                            <td><%= item.price_promotion || 'N/A' %></td>
+                            <td><%= new Date(item.createdAt).toLocaleString() %></td>
+                            <td><%= new Date(item.updatedAt).toLocaleString() %></td>
+                            <td>
+                                <div class="d-grid gap-2">
+                                    <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editModal<%= item.id %>">Edit</button>
+                                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal<%= item.id %>">Delete</button>
+                                </div>
+
+                                <!-- Edit Modal -->
+                                <div class="modal fade" id="editModal<%= item.id %>" tabindex="-1" aria-labelledby="editModalLabel<%= item.id %>" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <form action="/staff/games/update/<%= item.id %>" method="post" enctype="multipart/form-data">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="editModalLabel<%= item.id %>">Edit <%= item.title %></h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="mb-3">
+                                                        <label for="title<%= item.id %>" class="form-label">Title</label>
+                                                        <input type="text" class="form-control" id="title<%= item.id %>" name="title" value="<%= item.title %>" required>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="description<%= item.id %>" class="form-label">Description</label>
+                                                        <textarea class="form-control" id="description<%= item.id %>" name="description"><%= item.description %></textarea>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="price<%= item.id %>" class="form-label">Price (THB)</label>
+                                                        <input type="number" class="form-control" id="price<%= item.id %>" name="price" value="<%= item.price %>" step="0.01" required>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="price_promotion<%= item.id %>" class="form-label">Promo Price (THB)</label>
+                                                        <input type="number" class="form-control" id="price_promotion<%= item.id %>" name="price_promotion" value="<%= item.price_promotion || '' %>" step="0.01">
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="genre<%= item.id %>" class="form-label">Genre</label>
+                                                        <input type="text" class="form-control" id="genre<%= item.id %>" name="genre" value="<%= item.genre %>" required>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="platform<%= item.id %>" class="form-label">Platform</label>
+                                                        <input type="text" class="form-control" id="platform<%= item.id %>" name="platform" value="<%= item.platform %>">
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="is_outofstock<%= item.id %>" class="form-label">Out of Stock</label>
+                                                        <select class="form-select" id="is_outofstock<%= item.id %>" name="is_outofstock">
+                                                            <option value="true" <%= item.is_outofstock ? 'selected' : '' %>>Yes</option>
+                                                            <option value="false" <%= !item.is_outofstock ? 'selected' : '' %>>No</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="image<%= item.id %>" class="form-label">Image</label>
+                                                        <input type="file" class="form-control" id="image<%= item.id %>" name="image" accept="image/*">
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                              <!-- Delete Modal -->
+<div class="modal fade" id="deleteModal<%= item.id %>" tabindex="-1" aria-labelledby="deleteModalLabel<%= item.id %>" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel<%= item.id %>">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete <strong><%= item.title %></strong>? This action cannot be undone!
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <!-- 使用表单发送 DELETE 请求 -->
+                <form action="/staff/games/delete/<%= item.id %>?_method=DELETE" method="POST">
+                    <input type="hidden" name="genre" value="<%= genre %>">
+                    <input type="hidden" name="title" value="<%= encodeURIComponent(title) %>">
+                    <input type="hidden" name="page" value="<%= page %>">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+
+            <div class="float-end">
+                <nav aria-label="Game List Pagination">
+                    <ul class="pagination">
+                        <% if (data.previousPage == null) { %>
+                            <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+                        <% } else { %>
+                            <li class="page-item"><a class="page-link" href="?genre=<%= genre %>&title=<%= encodeURIComponent(title) %>&page=<%= data.previousPage %>">Previous</a></li>
+                        <% } %>
+                        <% if (data.previousPage != null) { %>
+                            <li class="page-item"><a class="page-link" href="?genre=<%= genre %>&title=<%= encodeURIComponent(title) %>&page=<%= data.previousPage %>"><%= data.previousPage %></a></li>
+                        <% } %>
+                        <li class="page-item active"><a class="page-link" href="#"><%= page %></a></li>
+                        <% if (data.nextPage != null) { %>
+                            <li class="page-item"><a class="page-link" href="?genre=<%= genre %>&title=<%= encodeURIComponent(title) %>&page=<%= data.nextPage %>"><%= data.nextPage %></a></li>
+                        <% } %>
+                        <% if (data.nextPage == null) { %>
+                            <li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
+                        <% } else { %>
+                            <li class="page-item"><a class="page-link" href="?genre=<%= genre %>&title=<%= encodeURIComponent(title) %>&page=<%= data.nextPage %>">Next</a></li>
+                        <% } %>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../partials/footer.ejs') %>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

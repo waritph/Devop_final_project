@@ -1,0 +1,48 @@
+/* /public/css/login-reg.css */
+body.background {
+    background-color: #1a1a1a; /* Dark gaming theme */
+    color: #fff; /* Light text */
+    font-family: 'Arial', sans-serif; /* Or a gaming font like 'Press Start 2P' */
+}
+
+.card {
+    background-color: #333;
+    border: 1px solid #555;
+    border-radius: 15px;
+}
+
+.btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+    transition: background-color 0.3s ease;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+}
+
+.text-muted {
+    color: #aaa !important;
+}
+
+.form-control {
+    background-color: #444;
+    color: #fff;
+    border: 1px solid #666;
+}
+
+.form-label {
+    color: #ddd;
+}
+
+.text-danger {
+    color: #ff5555;
+}
+
+.text-warning {
+    color: #ffaa00;
+}
+
+.text-success {
+    color: #55ff55;
+}

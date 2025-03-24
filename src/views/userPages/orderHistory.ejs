@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Order History - Game Shop</title>
+    <%- include('../partials/header.ejs') %>
+    <style>
+        body { background-color: #1a1a1a; color: #fff; min-height: 100vh; display: flex; flex-direction: column; }
+        .container-fluid { margin: 1.5rem; }
+        .table-dark { background-color: #333; color: #fff; border: 1px solid #555; }
+        .order-status.pending { color: #dc3545; }
+        .order-status.processing { color: #ffc107; }
+        .order-status.delivering { color: #6f42c1; }
+        .order-status.delivered { color: #28a745; }
+        .game-list { padding-left: 20px; margin: 0; }
+        .btn-primary { background-color: #007bff; border-color: #007bff; }
+        .btn-success { background-color: #28a745; border-color: #28a745; padding: 0.25rem 0.5rem; font-size: 0.875rem; }
+        .dropdown-menu { background-color: #333; color: #fff; }
+        .nav-tabs .nav-link { color: #fff; }
+        .nav-tabs .nav-link.active { background-color: #444; border-color: #666; }
+    </style>
+</head>
+
+<body>
+    <%- include('../components/navbar.ejs') %>
+    <%- include('../components/alertBlock.ejs') %>
+
+    <div class="container-fluid">
+        <h1>My Order History</h1>
+
+        <!-- Status Tabs (Desktop) -->
+        <nav class="d-none d-lg-block" aria-label="Order Status Tabs">
+            <div class="nav nav-tabs nav-responsive-lg">
+                <a class="nav-item nav-link" href="?status=any" role="tab" aria-controls="nav-all">All Orders</a>
+                <a class="nav-item nav-link" href="?status=pending" role="tab" aria-controls="nav-pending">Pending</a>
+                <a class="nav-item nav-link" href="?status=processing" role="tab" aria-controls="nav-processing">Processing</a>
+                <a class="nav-item nav-link" href="?status=delivering" role="tab" aria-controls="nav-delivering">Delivering</a>
+                <a class="nav-item nav-link" href="?status=delivered" role="tab" aria-controls="nav-delivered">Delivered</a>
+            </div>
+        </nav>
+
+        <!-- Status Dropdown (Mobile) -->
+        <div class="dropdown d-lg-none mb-5">
+            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownStatusButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Status
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownStatusButton">
+                <a class="nav-item nav-link" href="?status=any" role="tab" aria-controls="nav-all">All Orders</a>
+                <a class="nav-item nav-link" href="?status=pending" role="tab" aria-controls="nav-pending">Pending</a>
+                <a class="nav-item nav-link" href="?status=processing" role="tab" aria-controls="nav-processing">Processing</a>
+                <a class="nav-item nav-link" href="?status=delivering" role="tab" aria-controls="nav-delivering">Delivering</a>
+                <a class="nav-item nav-link" href="?status=delivered" role="tab" aria-controls="nav-delivered">Delivered</a>
+            </div>
+        </div>
+
+        <!-- Orders Table -->
+        <div class="table-responsive-lg">
+            <table class="table table-dark">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Games</th>
+                        <th scope="col">Price (THB)</th>
+                        <th scope="col">Destination</th>
+                        <th scope="col">Updated At</th>
+                        <th scope="col">View</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% data.forEach((order, index) => { %>
+                        <tr>
+                            <td><%= index + 1 %></td>
+                            <td class="text-capitalize">
+                                <span class="order-status <%= order.status %>"><%= order.status %></span>
+                            </td>
+                            <td>
+                                <ul class="game-list">
+                                    <% order.records.forEach(record => { %>
+                                        <li><%= record.item.title %> x <%= record.qty %></li>
+                                    <% }) %>
+                                </ul>
+                            </td>
+                            <td><%= order.total_price %></td>
+                            <td><%= order.destination %></td>
+                            <td><%= new Date(order.updatedAt).toLocaleString() %></td>
+                            <td>
+                                <a href="/user/order/<%= order._id %>" class="btn btn-success btn-sm">View</a>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <%- include('../partials/footer.ejs') %>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentUrl = window.location.href;
+            const allATag = document.querySelectorAll('.nav-item');
+            allATag.forEach(e => {
+                const selectedStatus = getQueryParams(currentUrl)['status'] || 'any';
+                if (e.innerHTML.toLowerCase().replace(' ', '') === selectedStatus.toLowerCase()) {
+                    e.classList.add('active');
+                }
+            });
+
+            function getQueryParams(url) {
+                const paramArr = url.slice(url.indexOf('?') + 1).split('&');
+                const params = {};
+                paramArr.map(param => {
+                    const [key, val] = param.split('=');
+                    params[key] = decodeURIComponent(val);
+                });
+                return params;
+            }
+        });
+    </script>
+</body>
+</html>

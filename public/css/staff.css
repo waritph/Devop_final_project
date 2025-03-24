@@ -1,0 +1,38 @@
+/* public/css/staff.css */
+body.background {
+    background-color: #f8f9fa;
+}
+
+.sidebar {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar .btn {
+    width: 100%;
+    text-align: center;
+}
+
+.dashboard-content {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+h1, h2 {
+    color: #343a40;
+}
+
+iframe {
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+}
+
+@media (max-width: 991px) {
+    .sidebar {
+        margin-bottom: 20px;
+    }
+}

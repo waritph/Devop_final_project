@@ -1,0 +1,89 @@
+<button type="button" class="btn btn-primary" 
+    style="position: fixed; right: 5%; top: 90%; z-index: 9;"
+    data-bs-toggle="modal" data-bs-target="#cartModal">
+    <i class="fa fa-shopping-cart"></i>
+</button>
+
+<div class="modal fade" id="cartModal" tabindex="-1" role="dialog" aria-labelledby="cartModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="cartModalLabel">My Cart</h3>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <% if (!cart || cart.length === 0) { %>
+                    <div class="text-center">
+                        <img src="/public/empty.png" width="300" height="300" class="img-fluid" alt="Empty cart" />
+                        <h4 class="p-3"><b>Oops!</b> No games in your cart yet!</h4>
+                    </div>
+                <% } else { %>
+                    <div class="container-fluid row">
+                        <% cart.forEach(record => { %>
+                            <div class="container-fluid row mt-3 border-bottom pb-2">
+                                <div class="media-body col-8">
+                                    <h6 class="mt-0"><%= record.item.title %></h6>
+                                    <% if (record.item.price_promotion) { %>
+                                        <h6><%= record.qty %> x <span class="text-danger"><%= record.item.price_promotion %></span> 
+                                            (<span class="text-muted text-decoration-line-through"><%= record.item.price %></span>) 
+                                            = <%= record.qty * record.item.price_promotion %> THB</h6>
+                                    <% } else { %>
+                                        <h6><%= record.qty %> x <%= record.item.price %> = <%= record.qty * record.item.price %> THB</h6>
+                                    <% } %>
+                                    <p>Platform: <%= record.platform || 'N/A' %></p>
+                                </div>
+                                <div class="col-4 text-right">
+                                    <button class="btn btn-link p-0 float-right" onclick="removeFromCart('<%= record.item.id %>')">
+                                        <i class="fa fa-trash" style="color: red;"></i>
+                                    </button>
+                                    <img class="image" width="100" height="100" src="<%= record.item.image_path %>" alt="<%= record.item.title %>">
+                                </div>
+                            </div>
+                        <% }) %>
+                    </div>
+                    <div class="container-fluid w-100 mt-3">
+                        <hr />
+                        <h4>Total Price: <span id="modalTotalPrice">
+                            <%= cart.reduce((sum, record) => sum + record.qty * (record.item.price_promotion || record.item.price), 0) %>
+                        </span> THB</h4>
+                    </div>
+                <% } %>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <% if (cart && cart.length > 0) { %>
+                    <a href="/user/checkout"><button class="btn btn-success" id="checkoutBtn">Checkout</button></a>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function removeFromCart(gameId) {
+        fetch('/user/cart/remove', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ gameId })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(res => {
+            if (res.status === 'success') {
+                const modal = bootstrap.Modal.getInstance(document.getElementById('cartModal'));
+                modal.hide();
+                location.reload();
+            } else {
+                alert('Failed to remove item: ' + res.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error removing item:', error);
+            alert('An error occurred while removing the item: ' + error.message);
+        });
+    }
+</script>

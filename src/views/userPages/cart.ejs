@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Cart - Game Shop</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <%- include('../partials/header.ejs') %>
+    <div class="container mt-5">
+        <h1>Your Cart</h1>
+        <% if (cart.length > 0) { %>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Game</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% cart.forEach(item => { %>
+                        <tr>
+                            <td><%= item.item.title %></td>
+                            <td><%= item.qty %></td>
+                            <td><%= item.price %></td>
+                            <td><a href="/user/remove/<%= item.item.id %>?category=games&page=1" class="btn btn-danger btn-sm">Remove</a></td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+            <p>Total Price: <%= totalPrice %></p>
+            <a href="/user/checkout" class="btn btn-success">Checkout</a>
+        <% } else { %>
+            <p>Your cart is empty. <a href="/games">Browse games</a></p>
+        <% } %>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
