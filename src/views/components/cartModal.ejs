@@ -41,8 +41,12 @@
                             </div>
                         <% }) %>
                     </div>
-                    
-                    
+                    <div class="container-fluid w-100 mt-3">
+                        <hr />
+                        <h4>Total Price: <span id="modalTotalPrice">
+                            <%= cart.reduce((sum, record) => sum + record.qty * (record.item.price_promotion || record.item.price), 0) %>
+                        </span> THB</h4>
+                    </div>
                 <% } %>
             </div>
             <div class="modal-footer">
