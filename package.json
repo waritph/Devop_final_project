@@ -1,0 +1,54 @@
+{
+  "name": "suigetsu",
+  "version": "0.5.1",
+  "description": "Game Shop web application",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/waritph/Devop_final_project.git"
+  },
+  "keywords": [
+    "game-shop",
+    "ecommerce",
+    "node.js"
+  ],
+  "author": "Your Name",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/waritph/Devop_final_project/issues"
+  },
+  "homepage": "https://github.com/waritph/Devop_final_project#readme",
+  "dependencies": {
+    "axios": "^1.8.3",
+    "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
+    "bootstrap": "^4.6.0",
+    "connect-mongo": "^5.1.0",
+    "dotenv": "^16.0.3",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "express-session": "^1.18.1",
+    "jquery": "^3.6.0",
+    "lodash": "^4.17.21",
+    "mongoose": "^7.0.1",
+    "multer": "^1.4.5-lts.1",
+    "mysql2": "^3.14.0",
+    "promptpay-qr": "^0.5.0",
+    "qrcode": "^1.5.4",
+    "sequelize": "^6.37.6",
+    "suigetsu": "file:",
+    "winston": "^3.8.2"
+  },
+  "devDependencies": {
+    "jest": "^29.5.0",
+    "nodemon": "^2.0.22"
+  },
+  "directories": {
+    "test": "test"
+  }
+}
