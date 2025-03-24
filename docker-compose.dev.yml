@@ -1,4 +1,4 @@
-version: '3.1'
+version: '3.8' # อัปเดตเวอร์ชันเป็น 3.8 เพื่อรองรับ `condition`
 
 services:
 
@@ -15,9 +15,14 @@ services:
       - default
     volumes:
       - mongo-db-dev:/data/db
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   app-server:
-    image:  ${DOCKER_HUB_USERNAME}/suigetsu-project:latest
+    image: ${DOCKER_HUB_USERNAME}/suigetsu-project:latest
     environment:
       MONGO_USER: ${MONGO_USER}
       MONGO_PASSWORD: ${MONGO_PASSWORD}
@@ -31,6 +36,9 @@ services:
     networks:
       - default
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+
 volumes:
   mongo-db-dev:
+    driver: local
